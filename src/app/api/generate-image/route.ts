@@ -73,6 +73,7 @@ export async function GET(request: NextRequest) {
       showLanguage: true,
       showUsedBy: false,
       avatarSize: parseInt(searchParams.get("avatarSize") || "116", 10),
+      safeZoneMargin: parseInt(searchParams.get("margin") || "96", 10),
     };
 
     const pngBuffer = await renderCardPng(config);

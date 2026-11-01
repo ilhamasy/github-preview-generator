@@ -29,6 +29,8 @@ export function getCardElement(config: CardConfig) {
   const owner = parts[0] || "";
   const repo = parts.slice(1).join("/") || "";
 
+  const marginX = config.safeZoneMargin || 96;
+
   return (
     <div
       style={{
@@ -49,7 +51,7 @@ export function getCardElement(config: CardConfig) {
           justifyContent: "space-between",
           height: "308px",
           width: "100%",
-          padding: "44px 64px 34px 64px",
+          padding: `52px ${marginX}px 32px ${marginX}px`,
           backgroundColor: "#FFFFFF",
         }}
       >
@@ -282,7 +284,7 @@ export function getCardElement(config: CardConfig) {
           height: "326px",
           width: "100%",
           backgroundColor: accentColor || "#650F25",
-          padding: "40px 64px 34px 64px",
+          padding: `42px ${marginX}px 36px ${marginX}px`,
         }}
       >
         {/* Title and Description */}

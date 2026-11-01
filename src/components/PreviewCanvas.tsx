@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Download, Copy, Check, Info, Loader2, Sparkles, ExternalLink } from "lucide-react";
+import { Download, Copy, Check, Info, Loader2, Sparkles, ExternalLink, Crop } from "lucide-react";
 import { CardConfig } from "@/types/preview";
 import { formatCompactNumber } from "@/lib/formatters";
 import { GitHubIcon, StarIcon, ForkIcon, UsersIcon, PackageIcon } from "@/lib/svgIcons";
@@ -15,6 +15,9 @@ interface PreviewCanvasProps {
 export function PreviewCanvas({ config, onRefreshMetadata, isFetching }: PreviewCanvasProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showSafeZoneGuide, setShowSafeZoneGuide] = useState(false);
+
+  const marginX = config.safeZoneMargin || 96;
 
   const {
     displayTitle,
@@ -101,6 +104,20 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching }: Preview
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={() => setShowSafeZoneGuide(!showSafeZoneGuide)}
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
+              showSafeZoneGuide
+                ? "bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 border border-red-300 dark:border-red-800 ring-2 ring-red-500/20 shadow-sm"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
+            }`}
+            title="Toggle 40pt GitHub / WhatsApp crop safe zone guide"
+          >
+            <Crop className="w-3.5 h-3.5 text-red-500" />
+            <span>40pt Safe Zone {showSafeZoneGuide ? "ON" : "OFF"}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={handleCopyApiUrl}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
             title="Copy direct PNG endpoint link"
@@ -135,19 +152,46 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching }: Preview
         {/* Scale container preserving 1280 x 640 aspect ratio */}
         <div className="relative w-full" style={{ paddingBottom: "50%" }}>
           <div
-            className="absolute inset-0 flex flex-col select-none"
+            className="absolute inset-0 flex flex-col select-none relative"
             style={{
               width: "1280px",
               height: "640px",
               transformOrigin: "top left",
-              // Dynamically scaled in CSS with transform: scale(...) handled below
             }}
             id="card-scaled-inner"
           >
+            {/* Visual Safe Zone Guide Overlay (Matching GitHub Repo Card Template) */}
+            {showSafeZoneGuide && (
+              <div
+                className="absolute inset-0 pointer-events-none z-30 flex flex-col justify-between"
+                style={{
+                  border: "80px solid rgba(239, 68, 68, 0.15)",
+                  boxSizing: "border-box",
+                }}
+              >
+                <div className="w-full h-full border-2 border-dashed border-red-500/80 flex flex-col justify-between p-4 bg-red-500/[0.02]">
+                  <div className="flex justify-between items-center">
+                    <span className="bg-red-600 text-white text-[12px] font-bold px-3 py-1 rounded-md shadow-md tracking-wider uppercase">
+                      40pt / 80px Safe Border (GitHub Standard)
+                    </span>
+                    <span className="text-red-700 text-[12px] font-bold bg-white/95 px-3 py-1 rounded-md shadow-sm border border-red-200">
+                      ✓ Avatar &amp; text fully protected from WhatsApp cropping
+                    </span>
+                  </div>
+                  <div className="text-center text-red-600 text-[12px] font-semibold bg-white/80 py-1 px-4 rounded-md mx-auto shadow-sm">
+                    Keep avatar &amp; metrics inside this dashed line so WhatsApp bubble cards don&apos;t clip them
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Upper White Header Section (~48% height = 308px) */}
             <div
-              className="flex flex-col justify-between w-full bg-white px-16 pt-11 pb-8"
-              style={{ height: "308px" }}
+              className="flex flex-col justify-between w-full bg-white"
+              style={{
+                height: "308px",
+                padding: `52px ${marginX}px 32px ${marginX}px`,
+              }}
             >
               {/* Top Row: Owner / Repo slug + Avatar */}
               <div className="flex justify-between items-start w-full">
@@ -276,10 +320,11 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching }: Preview
 
             {/* Burgundy Content Panel (~52% height = 326px) */}
             <div
-              className="flex flex-col justify-between w-full px-16 pt-10 pb-8 transition-colors duration-200"
+              className="flex flex-col justify-between w-full transition-colors duration-200"
               style={{
                 height: "326px",
                 backgroundColor: accentColor || "#650F25",
+                padding: `42px ${marginX}px 36px ${marginX}px`,
               }}
             >
               {/* Title & Description */}

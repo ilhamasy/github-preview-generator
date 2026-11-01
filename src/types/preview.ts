@@ -33,6 +33,7 @@ export interface CardConfig {
   usedBy?: string;
   showUsedBy: boolean;
   avatarSize?: number;
+  safeZoneMargin?: number;
 }
 
 export interface GitHubApiResponse {

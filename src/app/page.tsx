@@ -28,6 +28,7 @@ const DEFAULT_CONFIG: CardConfig = {
   usedBy: undefined,
   showUsedBy: false,
   avatarSize: 116,
+  safeZoneMargin: 96,
 };
 
 export default function Home() {
@@ -77,6 +78,7 @@ export default function Home() {
         usedBy: undefined,
         showUsedBy: false,
         avatarSize: config.avatarSize || 116,
+        safeZoneMargin: config.safeZoneMargin || 96,
       });
     } catch (err: unknown) {
       console.error("Fetch error:", err);

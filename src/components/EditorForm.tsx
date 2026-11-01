@@ -281,6 +281,42 @@ export function EditorForm({ config, onChange, originalMetadata, onReset }: Edit
                 ))}
               </div>
             </div>
+
+            {/* Social & WhatsApp Safe Zone Margin */}
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  Social &amp; WhatsApp Safe Margin
+                </label>
+                <span className="text-xs font-mono font-semibold text-rose-600 dark:text-rose-400">
+                  {config.safeZoneMargin || 96}px
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
+                GitHub recommends at least 40pt (80px) to prevent WhatsApp, Discord &amp; Twitter bubble cards from cropping the profile photo and corner details.
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { label: "WhatsApp Safe", px: 96, desc: "Recommended (96px)" },
+                  { label: "GitHub 40pt", px: 80, desc: "Standard (80px)" },
+                  { label: "Wide Safe", px: 112, desc: "Ultra Safe (112px)" },
+                ].map((item) => (
+                  <button
+                    key={item.px}
+                    type="button"
+                    onClick={() => updateField("safeZoneMargin", item.px)}
+                    className={`flex flex-col p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                      (config.safeZoneMargin || 96) === item.px
+                        ? "border-rose-600 ring-2 ring-rose-500/20 bg-rose-50/50 dark:bg-rose-950/20 text-rose-900 dark:text-rose-200"
+                        : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300"
+                    }`}
+                  >
+                    <span className="text-xs font-bold">{item.label}</span>
+                    <span className="text-[10px] text-slate-400 mt-0.5">{item.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
