@@ -32,6 +32,7 @@ export interface CardConfig {
   showLanguage: boolean;
   usedBy?: string;
   showUsedBy: boolean;
+  avatarSize?: number;
 }
 
 export interface GitHubApiResponse {

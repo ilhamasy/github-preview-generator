@@ -171,11 +171,23 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching }: Preview
                   <img
                     src={avatarUrl}
                     alt="Developer Avatar"
-                    className="w-20 h-20 rounded-[20px] border border-slate-200 object-cover shadow-lg shrink-0"
+                    style={{
+                      width: `${config.avatarSize || 116}px`,
+                      height: `${config.avatarSize || 116}px`,
+                      borderRadius: `${Math.round((config.avatarSize || 116) * 0.22)}px`,
+                    }}
+                    className="border-2 border-slate-200 object-cover shadow-xl shrink-0"
                     crossOrigin="anonymous"
                   />
                 ) : (
-                  <div className="w-20 h-20 rounded-[20px] bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 font-bold text-2xl shrink-0">
+                  <div
+                    style={{
+                      width: `${config.avatarSize || 116}px`,
+                      height: `${config.avatarSize || 116}px`,
+                      borderRadius: `${Math.round((config.avatarSize || 116) * 0.22)}px`,
+                    }}
+                    className="bg-slate-100 border-2 border-slate-200 flex items-center justify-center text-slate-600 font-bold text-3xl shrink-0 shadow-sm"
+                  >
                     {owner ? owner[0]?.toUpperCase() : "G"}
                   </div>
                 )}

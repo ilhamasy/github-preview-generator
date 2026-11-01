@@ -181,6 +181,48 @@ export function EditorForm({ config, onChange, originalMetadata, onReset }: Edit
                 className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-mono text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500/50"
               />
             </div>
+
+            <div>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  Developer Avatar Size
+                </label>
+                <span className="text-xs font-mono text-slate-500 dark:text-slate-400 font-semibold">
+                  {config.avatarSize || 116}px
+                </span>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <input
+                  type="range"
+                  min="80"
+                  max="140"
+                  step="4"
+                  value={config.avatarSize || 116}
+                  onChange={(e) => updateField("avatarSize", parseInt(e.target.value, 10))}
+                  className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-rose-600"
+                />
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {[
+                    { label: "Medium (88px)", size: 88 },
+                    { label: "Large (116px)", size: 116 },
+                    { label: "Extra Large (136px)", size: 136 },
+                  ].map((preset) => (
+                    <button
+                      key={preset.size}
+                      type="button"
+                      onClick={() => updateField("avatarSize", preset.size)}
+                      className={`px-2.5 py-1 text-xs rounded-lg font-medium transition-colors cursor-pointer ${
+                        (config.avatarSize || 116) === preset.size
+                          ? "bg-rose-600 text-white shadow-sm"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

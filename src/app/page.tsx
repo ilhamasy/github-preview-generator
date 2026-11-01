@@ -14,7 +14,7 @@ const DEFAULT_CONFIG: CardConfig = {
   subtitle: "A minimal and sleek user interface theme inspired by PlayStation 5 visuals.",
   ownerRepoLabel: "ilhamasy/cleanyourtv-ps5-theme",
   footerBranding: "github.com/ilhamasy/cleanyourtv-ps5-theme",
-  avatarUrl: "https://github.com/ilhamasy.png",
+  avatarUrl: "https://github.com/ilhamasy.png?size=460",
   accentColor: "#650F25", // Editorial deep burgundy
   contributors: 1,
   stars: 12,
@@ -27,6 +27,7 @@ const DEFAULT_CONFIG: CardConfig = {
   showLanguage: true,
   usedBy: undefined,
   showUsedBy: false,
+  avatarSize: 116,
 };
 
 export default function Home() {
@@ -75,6 +76,7 @@ export default function Home() {
         showLanguage: Boolean(data.language),
         usedBy: undefined,
         showUsedBy: false,
+        avatarSize: config.avatarSize || 116,
       });
     } catch (err: unknown) {
       console.error("Fetch error:", err);

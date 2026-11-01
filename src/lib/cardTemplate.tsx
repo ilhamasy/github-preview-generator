@@ -108,20 +108,20 @@ export function getCardElement(config: CardConfig) {
             </span>
           </div>
 
-          {/* Developer Avatar */}
+          {/* Developer Avatar (Larger & Prominent) */}
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt="Developer Avatar"
-              width="80"
-              height="80"
+              width={String(config.avatarSize || 116)}
+              height={String(config.avatarSize || 116)}
               style={{
-                width: "80px",
-                height: "80px",
-                borderRadius: "20px",
-                border: "1px solid #E2E8F0",
+                width: `${config.avatarSize || 116}px`,
+                height: `${config.avatarSize || 116}px`,
+                borderRadius: `${Math.round((config.avatarSize || 116) * 0.22)}px`,
+                border: "2px solid #E2E8F0",
                 objectFit: "cover",
-                boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.08)",
+                boxShadow: "0 14px 30px -6px rgba(0, 0, 0, 0.12)",
               }}
             />
           ) : (
@@ -130,14 +130,14 @@ export function getCardElement(config: CardConfig) {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                width: "80px",
-                height: "80px",
-                borderRadius: "20px",
+                width: `${config.avatarSize || 116}px`,
+                height: `${config.avatarSize || 116}px`,
+                borderRadius: `${Math.round((config.avatarSize || 116) * 0.22)}px`,
                 backgroundColor: "#F1F5F9",
-                border: "1px solid #E2E8F0",
+                border: "2px solid #E2E8F0",
                 color: "#64748B",
                 fontWeight: 700,
-                fontSize: "28px",
+                fontSize: "36px",
               }}
             >
               {owner ? owner[0]?.toUpperCase() : "G"}

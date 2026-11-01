@@ -72,6 +72,7 @@ export async function GET(request: NextRequest) {
       showForks: true,
       showLanguage: true,
       showUsedBy: false,
+      avatarSize: parseInt(searchParams.get("avatarSize") || "116", 10),
     };
 
     const pngBuffer = await renderCardPng(config);

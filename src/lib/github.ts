@@ -102,7 +102,9 @@ export async function fetchGitHubRepoData(
       contributors: contributorsCount,
       language: repoJson.language || null,
       languageColor: getLanguageColor(repoJson.language),
-      avatarUrl: repoJson.owner?.avatar_url || `https://github.com/${owner}.png`,
+      avatarUrl: (repoJson.owner?.avatar_url
+        ? `${repoJson.owner.avatar_url}${repoJson.owner.avatar_url.includes("?") ? "&" : "?"}size=460`
+        : `https://github.com/${owner}.png?size=460`),
       openIssues: repoJson.open_issues_count ?? 0,
       homepage: repoJson.homepage || null,
       usedBy: null, // As specified: hide by default; do not invent fake metrics
