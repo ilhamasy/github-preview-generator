@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "GitHub Preview Generator - Editorial Social Cards",
   description:
-    "Generate custom, editorial-style GitHub repository social preview images (1280x640) with real metrics, differentiated typography, and server-side PNG rendering.",
+    "Generate custom, editorial-style GitHub repository social preview images (1200x630 Open Graph standard) with real metrics, differentiated typography, and server-side PNG rendering.",
   keywords: [
     "GitHub preview",
     "social preview generator",

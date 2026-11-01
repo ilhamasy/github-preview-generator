@@ -73,12 +73,12 @@ export async function GET(request: NextRequest) {
       showLanguage: true,
       showUsedBy: false,
       avatarSize: parseInt(searchParams.get("avatarSize") || "120", 10),
-      safeZoneMargin: parseInt(searchParams.get("margin") || "96", 10),
-      exportPreset: searchParams.get("preset") === "640x320" ? "640x320" : "1280x640",
+      safeZoneMargin: parseInt(searchParams.get("margin") || "84", 10),
+      exportPreset: searchParams.get("preset") === "600x315" ? "600x315" : "1200x630",
     };
 
     const pngBuffer = await renderCardPng(config);
-    const safeFilename = `${data.owner}-${data.repo}-${config.exportPreset || "1280x640"}`;
+    const safeFilename = `${data.owner}-${data.repo}-${config.exportPreset || "1200x630"}`;
 
     return new NextResponse(pngBuffer as unknown as BodyInit, {
       status: 200,

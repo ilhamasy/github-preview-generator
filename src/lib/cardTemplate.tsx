@@ -29,29 +29,32 @@ export function getCardElement(config: CardConfig) {
   const owner = parts[0] || "";
   const repo = parts.slice(1).join("/") || "";
 
-  const marginX = config.safeZoneMargin || 96;
+  // Safe margin: at least 6% of 1200px is 72px; default to 84px (7.0%)
+  const marginX = config.safeZoneMargin || 84;
 
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
-        width: "1280px",
-        height: "640px",
+        width: "1200px",
+        height: "630px",
+        boxSizing: "border-box",
         backgroundColor: "#FFFFFF",
         fontFamily: "Inter, sans-serif",
         overflow: "hidden",
       }}
     >
-      {/* Upper White Header Section (~48% height = ~308px) */}
+      {/* Upper White Header Section (~48% height = ~302px) */}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          height: "308px",
-          width: "100%",
-          padding: `52px ${marginX}px 32px ${marginX}px`,
+          boxSizing: "border-box",
+          height: "302px",
+          width: "1200px",
+          padding: `44px ${marginX}px 28px ${marginX}px`,
           backgroundColor: "#FFFFFF",
         }}
       >
@@ -281,16 +284,17 @@ export function getCardElement(config: CardConfig) {
         }}
       />
 
-      {/* Burgundy Content Panel (~52% height = ~326px) */}
+      {/* Burgundy Content Panel (~52% height = ~322px) */}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          height: "326px",
-          width: "100%",
+          boxSizing: "border-box",
+          height: "322px",
+          width: "1200px",
           backgroundColor: accentColor || "#650F25",
-          padding: `42px ${marginX}px 36px ${marginX}px`,
+          padding: `36px ${marginX}px 40px ${marginX}px`,
         }}
       >
         {/* Title and Description */}
@@ -298,8 +302,8 @@ export function getCardElement(config: CardConfig) {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "14px",
-            maxWidth: "1150px",
+            gap: "12px",
+            maxWidth: "1032px",
           }}
         >
           <div

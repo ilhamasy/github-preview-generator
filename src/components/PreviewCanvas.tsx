@@ -18,7 +18,7 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
   const [copied, setCopied] = useState(false);
   const [showSafeZoneGuide, setShowSafeZoneGuide] = useState(false);
 
-  // ResizeObserver for exact, pixel-perfect container scaling without any black gap
+  // Responsive scaling container for 1200 × 630 px (1.91:1) without empty gap
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(640);
 
@@ -45,12 +45,15 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
     };
   }, []);
 
-  const scale = containerWidth > 0 ? containerWidth / 1280 : 0.5;
-  const exactHeight = Math.round(containerWidth * 0.5);
+  // Standard 1200 × 630 (1.91:1 ratio) scaling
+  const scale = containerWidth > 0 ? containerWidth / 1200 : 0.5;
+  const exactHeight = Math.round(containerWidth * (630 / 1200));
 
-  const is640 = config.exportPreset === "640x320";
-  // For 640x320 mobile / WhatsApp mode, provide generous safe margin so photo never clips
-  const marginX = config.safeZoneMargin || (is640 ? 112 : 96);
+  const targetPreset = config.exportPreset || "1200x630";
+  const is600 = targetPreset === "600x315" || targetPreset === "640x320";
+
+  // Safe area of at least 6% on all sides (6% of 1200 = 72px; default to 84px = 7.0%)
+  const marginX = config.safeZoneMargin || 84;
   const avatarPx = config.avatarSize || 120;
   const avatarBorderRadius =
     config.avatarShape === "circle" ? "50%" : `${Math.round(avatarPx * 0.22)}px`;
@@ -97,7 +100,7 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       const safeFilename = ownerRepoLabel.replace(/[^a-zA-Z0-9_-]/g, "-") || "github-preview";
-      const targetSize = is640 ? "640x320" : "1280x640";
+      const targetSize = is600 ? "600x315" : "1200x630";
       link.href = url;
       link.download = `${safeFilename}-${targetSize}.png`;
       document.body.appendChild(link);
@@ -117,7 +120,7 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
     const safeTitle = encodeURIComponent(displayTitle);
     const safeSubtitle = encodeURIComponent(subtitle);
     const safeColor = encodeURIComponent(accentColor);
-    const preset = config.exportPreset === "640x320" ? "&preset=640x320" : "";
+    const preset = is600 ? "&preset=600x315" : "&preset=1200x630";
     const fullUrl = `${window.location.origin}/api/generate-image?repo=${safeRepo}&title=${safeTitle}&subtitle=${safeSubtitle}&color=${safeColor}${preset}`;
 
     navigator.clipboard.writeText(fullUrl);
@@ -133,7 +136,7 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
           <div className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Preset:
+              Preset (1.91:1):
             </span>
           </div>
 
@@ -141,25 +144,25 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
           <div className="inline-flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 gap-1">
             <button
               type="button"
-              onClick={() => onChangeConfig?.({ ...config, exportPreset: "640x320", safeZoneMargin: 112 })}
+              onClick={() => onChangeConfig?.({ ...config, exportPreset: "1200x630", safeZoneMargin: 84 })}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                is640
+                !is600
                   ? "bg-rose-600 text-white shadow-sm"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              640 × 320 (WhatsApp/Mobile)
+              1200 × 630 (OG Default)
             </button>
             <button
               type="button"
-              onClick={() => onChangeConfig?.({ ...config, exportPreset: "1280x640" })}
+              onClick={() => onChangeConfig?.({ ...config, exportPreset: "600x315", safeZoneMargin: 84 })}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                !is640
+                is600
                   ? "bg-rose-600 text-white shadow-sm"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              1280 × 640 (Hi-DPI)
+              600 × 315 (Mobile 1x)
             </button>
           </div>
         </div>
@@ -174,10 +177,10 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
                 ? "bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 border border-red-300 dark:border-red-800 ring-2 ring-red-500/20 shadow-sm"
                 : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
             }`}
-            title="Toggle WhatsApp / 40pt crop safe zone guide"
+            title="Toggle 6% Open Graph safe zone crop guide"
           >
             <Crop className="w-3.5 h-3.5 text-red-500" />
-            <span>Crop Guide {showSafeZoneGuide ? "ON" : "OFF"}</span>
+            <span>6% Safe Area {showSafeZoneGuide ? "ON" : "OFF"}</span>
           </button>
 
           <button
@@ -205,7 +208,7 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
             ) : (
               <>
                 <Download className="w-3.5 h-3.5" />
-                <span>Download PNG ({is640 ? "640×320" : "1280×640"})</span>
+                <span>Download PNG ({is600 ? "600×315" : "1200×630"})</span>
               </>
             )}
           </button>
@@ -248,7 +251,7 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
             <button
               type="button"
               onClick={() => onChangeConfig?.({ ...config, avatarShape: "squircle" })}
-              className={`px-2.5 py-1 text-xs rounded-lg font-bold transition-all cursor-pointer ${
+              className={`px-3 py-1 text-xs rounded-lg font-bold transition-all cursor-pointer ${
                 config.avatarShape !== "circle"
                   ? "bg-rose-600 text-white shadow-sm"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
@@ -259,7 +262,7 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
             <button
               type="button"
               onClick={() => onChangeConfig?.({ ...config, avatarShape: "circle" })}
-              className={`px-2.5 py-1 text-xs rounded-lg font-bold transition-all cursor-pointer ${
+              className={`px-3 py-1 text-xs rounded-lg font-bold transition-all cursor-pointer ${
                 config.avatarShape === "circle"
                   ? "bg-rose-600 text-white shadow-sm"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
@@ -271,7 +274,7 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
         </div>
       </div>
 
-      {/* Main Card Canvas Wrapper - Strictly sized to exact scaled height without ANY black rectangle */}
+      {/* Main Card Canvas Wrapper - Scaled strictly to 1200 × 630 (1.91:1) without ANY black gap */}
       <div
         ref={containerRef}
         className="w-full relative overflow-hidden rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 bg-white"
@@ -281,8 +284,8 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
       >
         <div
           style={{
-            width: "1280px",
-            height: "640px",
+            width: "1200px",
+            height: "630px",
             transform: `scale(${scale})`,
             transformOrigin: "top left",
             position: "absolute",
@@ -291,42 +294,45 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
           }}
           className="flex flex-col select-none"
         >
-          {/* Visual Safe Zone Guide Overlay (Matching GitHub Repo Card Template) */}
+          {/* Visual Safe Zone Guide Overlay (6% safe area on all sides: 72px H / 38px V) */}
           {showSafeZoneGuide && (
             <div
               className="absolute inset-0 pointer-events-none z-30 flex flex-col justify-between"
               style={{
-                border: "80px solid rgba(239, 68, 68, 0.15)",
+                borderTop: "38px solid rgba(239, 68, 68, 0.16)",
+                borderBottom: "38px solid rgba(239, 68, 68, 0.16)",
+                borderLeft: "72px solid rgba(239, 68, 68, 0.16)",
+                borderRight: "72px solid rgba(239, 68, 68, 0.16)",
                 boxSizing: "border-box",
               }}
             >
-              <div className="w-full h-full border-2 border-dashed border-red-500/80 flex flex-col justify-between p-4 bg-red-500/[0.02]">
+              <div className="w-full h-full border-2 border-dashed border-red-500/80 flex flex-col justify-between p-3 bg-red-500/[0.02]">
                 <div className="flex justify-between items-center">
                   <span className="bg-red-600 text-white text-[12px] font-bold px-3 py-1 rounded-md shadow-md tracking-wider uppercase">
-                    40pt / 80px Safe Border (GitHub Standard)
+                    ≥ 6% Safe Area (Open Graph 1200 × 630)
                   </span>
                   <span className="text-red-700 text-[12px] font-bold bg-white/95 px-3 py-1 rounded-md shadow-sm border border-red-200">
-                    ✓ All content safely visible on WhatsApp &amp; Mobile
+                    ✓ 100% Protected from WhatsApp &amp; Mobile Cropping
                   </span>
                 </div>
                 <div className="text-center text-red-600 text-[12px] font-semibold bg-white/80 py-1 px-4 rounded-md mx-auto shadow-sm">
-                  Keep avatar inside this dashed box so WhatsApp cards will not crop the photo
+                  All text, repository details, metrics, and developer photo remain inside this safe boundary
                 </div>
               </div>
             </div>
           )}
 
-          {/* Upper White Header Section (~48% height = 308px) */}
+          {/* Upper White Header Section (~48% height = ~302px) */}
           <div
             className="flex flex-col justify-between w-full bg-white"
             style={{
-              height: "308px",
-              padding: `52px ${marginX}px 32px ${marginX}px`,
+              height: "302px",
+              padding: `44px ${marginX}px 28px ${marginX}px`,
             }}
           >
             {/* Top Row: Owner / Repo slug + Avatar */}
             <div className="flex justify-between items-start w-full">
-              <div className="flex flex-wrap items-baseline gap-2.5 max-w-[1020px]">
+              <div className="flex flex-wrap items-baseline gap-2.5 max-w-[940px]">
                 {owner && (
                   <span className="text-[34px] font-medium text-slate-500 tracking-[-0.5px]">
                     {owner}
@@ -449,27 +455,27 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
             }}
           />
 
-          {/* Burgundy Content Panel (~52% height = 326px) */}
+          {/* Burgundy Content Panel (~52% height = ~322px) */}
           <div
             className="flex flex-col justify-between w-full transition-colors duration-200"
             style={{
-              height: "326px",
+              height: "322px",
               backgroundColor: accentColor || "#650F25",
-              padding: `42px ${marginX}px 36px ${marginX}px`,
+              padding: `36px ${marginX}px 40px ${marginX}px`,
             }}
           >
             {/* Title & Description */}
-            <div className="flex flex-col gap-3.5 max-w-[1150px]">
-              <h1 className="text-[48px] font-extrabold text-white tracking-[-1px] leading-[1.15] line-clamp-2">
+            <div className="flex flex-col gap-3 max-w-[1032px]">
+              <h1 className="text-[46px] font-extrabold text-white tracking-[-1px] leading-[1.15] line-clamp-2">
                 {displayTitle || repo || "Repository Title"}
               </h1>
-              <p className="text-[21px] font-normal text-rose-100/95 leading-[1.5] line-clamp-2">
+              <p className="text-[20px] font-normal text-rose-100/95 leading-[1.5] line-clamp-2">
                 {subtitle || "No description provided for this repository."}
               </p>
             </div>
 
             {/* Footer Branding Bar */}
-            <div className="flex justify-between items-center w-full border-t border-white/15 pt-4">
+            <div className="flex justify-between items-center w-full border-t border-white/15 pt-3.5">
               <div className="flex items-center gap-3">
                 <GitHubIcon size={24} color="#FFFFFF" />
                 <span className="text-[18px] font-semibold text-white tracking-[-0.2px]">
@@ -489,7 +495,7 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
       <div className="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 flex items-start gap-2.5">
         <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
         <p>
-          <strong>WhatsApp &amp; Mobile Compatibility:</strong> GitHub recommends at least 640×320px (1280×640px for Hi-DPI). The <strong>640 × 320</strong> preset formats your image so that mobile messengers like WhatsApp display all content and your photo without clipping.
+          <strong>Open Graph 1.91:1 Recommended:</strong> The default <strong>1200 × 630 px</strong> format with ≥ 6% safe margins guarantees that all repository metrics, description, and profile picture remain fully visible on WhatsApp, Twitter/X, Discord, and GitHub social previews without clipping.
         </p>
       </div>
     </div>

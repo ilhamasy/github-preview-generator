@@ -28,8 +28,8 @@ const DEFAULT_CONFIG: CardConfig = {
   usedBy: undefined,
   showUsedBy: false,
   avatarSize: 120,
-  safeZoneMargin: 112,
-  exportPreset: "640x320",
+  safeZoneMargin: 84,
+  exportPreset: "1200x630",
 };
 
 export default function Home() {
@@ -79,8 +79,8 @@ export default function Home() {
         usedBy: undefined,
         showUsedBy: false,
         avatarSize: config.avatarSize || 120,
-        safeZoneMargin: config.safeZoneMargin || 112,
-        exportPreset: config.exportPreset || "640x320",
+        safeZoneMargin: config.safeZoneMargin || 84,
+        exportPreset: config.exportPreset || "1200x630",
       });
     } catch (err: unknown) {
       console.error("Fetch error:", err);
@@ -126,7 +126,7 @@ export default function Home() {
                 GitHub Preview Generator
               </span>
               <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
-                Editorial 1280×640 Social Card Generator
+                Open Graph 1200×630 Social Card Generator
               </span>
             </div>
           </div>
@@ -150,13 +150,13 @@ export default function Home() {
         <div className="space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900/60 text-xs font-medium text-rose-800 dark:text-rose-300">
             <Sparkles className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
-            <span>Editorial-style social cards for GitHub repositories</span>
+            <span>Open Graph 1.91:1 social cards for GitHub repositories</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             Generate Custom Repository Social Previews
           </h1>
           <p className="text-sm text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
-            Create high-resolution 1280 × 640 cards with real GitHub metrics, differentiated typography, custom editorial palettes, and server-side PNG rendering via Satori &amp; Resvg.
+            Create high-resolution 1200 × 630 cards (1.91:1) with real GitHub metrics, differentiated typography, custom editorial palettes, and server-side PNG rendering via Satori &amp; Resvg.
           </p>
         </div>
 
@@ -210,7 +210,7 @@ export default function Home() {
               Created by @ilhamasy
             </a>
             <span>•</span>
-            <span>1280 × 640 Social Canvas</span>
+            <span>1200 × 630 Open Graph (1.91:1)</span>
           </div>
         </div>
       </footer>

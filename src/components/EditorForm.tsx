@@ -437,31 +437,31 @@ export function EditorForm({ config, onChange, originalMetadata, onReset }: Edit
               </div>
             </div>
 
-            {/* Social & WhatsApp Safe Zone Margin */}
+            {/* Social Safe Zone Margin (>=6%) */}
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
               <div className="flex justify-between items-center mb-1.5">
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                  Social &amp; WhatsApp Safe Margin
+                  Safe Area Margin (≥6%)
                 </label>
                 <span className="text-xs font-mono font-semibold text-rose-600 dark:text-rose-400">
-                  {config.safeZoneMargin || 96}px
+                  {config.safeZoneMargin || 84}px ({(((config.safeZoneMargin || 84) / 1200) * 100).toFixed(1)}%)
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
-                GitHub recommends at least 40pt (80px) to prevent WhatsApp, Discord &amp; Twitter bubble cards from cropping the profile photo and corner details.
+                Maintains at least 6% safe area margin on all sides (≥72px) to prevent WhatsApp, Discord, Slack, and Twitter link cards from cropping the profile photo or text.
               </p>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { label: "WhatsApp Safe", px: 96, desc: "Recommended (96px)" },
-                  { label: "GitHub 40pt", px: 80, desc: "Standard (80px)" },
-                  { label: "Wide Safe", px: 112, desc: "Ultra Safe (112px)" },
+                  { label: "6% Safe Area", px: 72, desc: "Standard (72px)" },
+                  { label: "7% Recommended", px: 84, desc: "Default (84px)" },
+                  { label: "9.5% Wide Safe", px: 114, desc: "Ultra Safe (114px)" },
                 ].map((item) => (
                   <button
                     key={item.px}
                     type="button"
                     onClick={() => updateField("safeZoneMargin", item.px)}
                     className={`flex flex-col p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
-                      (config.safeZoneMargin || 96) === item.px
+                      (config.safeZoneMargin || 84) === item.px
                         ? "border-rose-600 ring-2 ring-rose-500/20 bg-rose-50/50 dark:bg-rose-950/20 text-rose-900 dark:text-rose-200"
                         : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300"
                     }`}
