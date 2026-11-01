@@ -185,6 +185,7 @@ export default function Home() {
               config={config}
               onRefreshMetadata={() => fetchRepo(config.ownerRepoLabel)}
               isFetching={isLoading}
+              onChangeConfig={setConfig}
             />
           </div>
         </div>

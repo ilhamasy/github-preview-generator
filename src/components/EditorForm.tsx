@@ -36,7 +36,7 @@ const COLOR_PRESETS = [
 ];
 
 export function EditorForm({ config, onChange, originalMetadata, onReset }: EditorFormProps) {
-  const [activeTab, setActiveTab] = useState<"content" | "style" | "metrics">("content");
+  const [activeTab, setActiveTab] = useState<"content" | "avatar" | "style" | "metrics">("content");
 
   const updateField = <K extends keyof CardConfig>(field: K, value: CardConfig[K]) => {
     onChange({
@@ -49,7 +49,7 @@ export function EditorForm({ config, onChange, originalMetadata, onReset }: Edit
     <div className="w-full bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
       {/* Header with tabs and reset button */}
       <div className="flex flex-wrap items-center justify-between border-b border-slate-200 dark:border-slate-800 px-6 pt-4 pb-2 bg-slate-50/50 dark:bg-slate-900/50 gap-2">
-        <div className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-1">
           <button
             type="button"
             onClick={() => setActiveTab("content")}
@@ -61,6 +61,19 @@ export function EditorForm({ config, onChange, originalMetadata, onReset }: Edit
           >
             <Type className="w-3.5 h-3.5" />
             <span>Content</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("avatar")}
+            className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+              activeTab === "avatar"
+                ? "bg-white dark:bg-slate-800 text-rose-700 dark:text-rose-400 shadow-sm"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <User className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+            <span>Photo / Avatar</span>
           </button>
 
           <button
@@ -226,7 +239,149 @@ export function EditorForm({ config, onChange, originalMetadata, onReset }: Edit
           </div>
         )}
 
-        {/* Tab 2: Style & Color */}
+        {/* Tab: Photo & Avatar */}
+        {activeTab === "avatar" && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+              {config.avatarUrl ? (
+                <img
+                  src={config.avatarUrl}
+                  alt="Avatar Preview"
+                  style={{
+                    width: "72px",
+                    height: "72px",
+                    borderRadius: config.avatarShape === "circle" ? "50%" : "18px",
+                  }}
+                  className="border-2 border-slate-300 dark:border-slate-700 object-cover shadow-md shrink-0"
+                  crossOrigin="anonymous"
+                />
+              ) : (
+                <div
+                  style={{
+                    width: "72px",
+                    height: "72px",
+                    borderRadius: config.avatarShape === "circle" ? "50%" : "18px",
+                  }}
+                  className="bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-xl text-slate-500 shrink-0"
+                >
+                  ?
+                </div>
+              )}
+              <div className="space-y-1">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                  Developer Avatar Controls
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Scale your profile picture from Medium up to Giant (160px) and choose between modern Squircle or Circle shapes.
+                </p>
+              </div>
+            </div>
+
+            {/* Photo Size Controls */}
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  Photo Size
+                </label>
+                <span className="text-sm font-mono font-extrabold text-rose-600 dark:text-rose-400">
+                  {config.avatarSize || 120}px
+                </span>
+              </div>
+
+              <input
+                type="range"
+                min="80"
+                max="160"
+                step="4"
+                value={config.avatarSize || 120}
+                onChange={(e) => updateField("avatarSize", parseInt(e.target.value, 10))}
+                className="w-full h-2.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-rose-600 mb-3"
+              />
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {[
+                  { label: "Medium", size: 92, desc: "Subtle (92px)" },
+                  { label: "Large", size: 120, desc: "Default (120px)" },
+                  { label: "Extra Large", size: 140, desc: "Big (140px)" },
+                  { label: "Jumbo", size: 160, desc: "Giant (160px)" },
+                ].map((preset) => (
+                  <button
+                    key={preset.size}
+                    type="button"
+                    onClick={() => updateField("avatarSize", preset.size)}
+                    className={`flex flex-col p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                      (config.avatarSize || 120) === preset.size
+                        ? "border-rose-600 ring-2 ring-rose-500/20 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200"
+                        : "border-slate-200 dark:border-slate-800 hover:border-slate-300 text-slate-700 dark:text-slate-300"
+                    }`}
+                  >
+                    <span className="text-xs font-bold">{preset.label}</span>
+                    <span className="text-[10px] text-slate-400 mt-0.5">{preset.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Photo Shape Controls */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                Photo Shape
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => updateField("avatarShape", "squircle")}
+                  className={`flex items-center gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                    config.avatarShape !== "circle"
+                      ? "border-rose-600 ring-2 ring-rose-500/20 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200"
+                      : "border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-[9px] border-2 border-current shrink-0 bg-slate-200 dark:bg-slate-700" />
+                  <div>
+                    <span className="text-xs font-bold block">Editorial Squircle</span>
+                    <span className="text-[10px] text-slate-400">Smooth rounded corners</span>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => updateField("avatarShape", "circle")}
+                  className={`flex items-center gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                    config.avatarShape === "circle"
+                      ? "border-rose-600 ring-2 ring-rose-500/20 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200"
+                      : "border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-full border-2 border-current shrink-0 bg-slate-200 dark:bg-slate-700" />
+                  <div>
+                    <span className="text-xs font-bold block">Classic Circle</span>
+                    <span className="text-[10px] text-slate-400">Circular profile photo</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Avatar URL Input */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                Avatar Image URL
+              </label>
+              <input
+                type="text"
+                value={config.avatarUrl}
+                onChange={(e) => updateField("avatarUrl", e.target.value)}
+                placeholder="https://avatars.githubusercontent.com/u/..."
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-mono text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500/50"
+              />
+              <span className="text-[11px] text-slate-400 mt-1 block">
+                Supports GitHub avatars or custom public image URLs. Automatically upgraded to high-res.
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 3: Style & Color */}
         {activeTab === "style" && (
           <div className="space-y-5">
             <div>

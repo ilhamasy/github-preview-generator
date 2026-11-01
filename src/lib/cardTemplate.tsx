@@ -110,17 +110,20 @@ export function getCardElement(config: CardConfig) {
             </span>
           </div>
 
-          {/* Developer Avatar (Larger & Prominent) */}
+          {/* Developer Avatar (Prominent & High-Res) */}
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt="Developer Avatar"
-              width={String(config.avatarSize || 116)}
-              height={String(config.avatarSize || 116)}
+              width={String(config.avatarSize || 120)}
+              height={String(config.avatarSize || 120)}
               style={{
-                width: `${config.avatarSize || 116}px`,
-                height: `${config.avatarSize || 116}px`,
-                borderRadius: `${Math.round((config.avatarSize || 116) * 0.22)}px`,
+                width: `${config.avatarSize || 120}px`,
+                height: `${config.avatarSize || 120}px`,
+                borderRadius:
+                  config.avatarShape === "circle"
+                    ? "50%"
+                    : `${Math.round((config.avatarSize || 120) * 0.22)}px`,
                 border: "2px solid #E2E8F0",
                 objectFit: "cover",
                 boxShadow: "0 14px 30px -6px rgba(0, 0, 0, 0.12)",
@@ -132,9 +135,12 @@ export function getCardElement(config: CardConfig) {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                width: `${config.avatarSize || 116}px`,
-                height: `${config.avatarSize || 116}px`,
-                borderRadius: `${Math.round((config.avatarSize || 116) * 0.22)}px`,
+                width: `${config.avatarSize || 120}px`,
+                height: `${config.avatarSize || 120}px`,
+                borderRadius:
+                  config.avatarShape === "circle"
+                    ? "50%"
+                    : `${Math.round((config.avatarSize || 120) * 0.22)}px`,
                 backgroundColor: "#F1F5F9",
                 border: "2px solid #E2E8F0",
                 color: "#64748B",

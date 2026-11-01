@@ -10,14 +10,17 @@ interface PreviewCanvasProps {
   config: CardConfig;
   onRefreshMetadata?: () => void;
   isFetching?: boolean;
+  onChangeConfig?: (updated: CardConfig) => void;
 }
 
-export function PreviewCanvas({ config, onRefreshMetadata, isFetching }: PreviewCanvasProps) {
+export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeConfig }: PreviewCanvasProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showSafeZoneGuide, setShowSafeZoneGuide] = useState(false);
 
   const marginX = config.safeZoneMargin || 96;
+  const avatarPx = config.avatarSize || 120;
+  const avatarBorderRadius = config.avatarShape === "circle" ? "50%" : `${Math.round(avatarPx * 0.22)}px`;
 
   const {
     displayTitle,
@@ -147,6 +150,65 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching }: Preview
         </div>
       </div>
 
+      {/* Prominent Quick-Control Bar for Avatar & Photo Size */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-rose-600" />
+            Photo Size:
+          </span>
+          <div className="inline-flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 gap-1">
+            {[
+              { label: "Medium", px: 92 },
+              { label: "Large", px: 120 },
+              { label: "XL (Big)", px: 140 },
+              { label: "XXL (Giant)", px: 160 },
+            ].map((preset) => (
+              <button
+                key={preset.px}
+                type="button"
+                onClick={() => onChangeConfig?.({ ...config, avatarSize: preset.px })}
+                className={`px-3 py-1 text-xs rounded-lg font-bold transition-all cursor-pointer ${
+                  avatarPx === preset.px
+                    ? "bg-rose-600 text-white shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                {preset.label} ({preset.px}px)
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-slate-500">Shape:</span>
+          <div className="inline-flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 gap-1">
+            <button
+              type="button"
+              onClick={() => onChangeConfig?.({ ...config, avatarShape: "squircle" })}
+              className={`px-3 py-1 text-xs rounded-lg font-bold transition-all cursor-pointer ${
+                config.avatarShape !== "circle"
+                  ? "bg-rose-600 text-white shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+              }`}
+            >
+              Squircle
+            </button>
+            <button
+              type="button"
+              onClick={() => onChangeConfig?.({ ...config, avatarShape: "circle" })}
+              className={`px-3 py-1 text-xs rounded-lg font-bold transition-all cursor-pointer ${
+                config.avatarShape === "circle"
+                  ? "bg-rose-600 text-white shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+              }`}
+            >
+              Circle
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Main Card Canvas (Scaled proportionally via aspect-[2/1] container) */}
       <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 bg-slate-950">
         {/* Scale container preserving 1280 x 640 aspect ratio */}
@@ -216,9 +278,9 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching }: Preview
                     src={avatarUrl}
                     alt="Developer Avatar"
                     style={{
-                      width: `${config.avatarSize || 116}px`,
-                      height: `${config.avatarSize || 116}px`,
-                      borderRadius: `${Math.round((config.avatarSize || 116) * 0.22)}px`,
+                      width: `${avatarPx}px`,
+                      height: `${avatarPx}px`,
+                      borderRadius: avatarBorderRadius,
                     }}
                     className="border-2 border-slate-200 object-cover shadow-xl shrink-0"
                     crossOrigin="anonymous"
@@ -226,9 +288,9 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching }: Preview
                 ) : (
                   <div
                     style={{
-                      width: `${config.avatarSize || 116}px`,
-                      height: `${config.avatarSize || 116}px`,
-                      borderRadius: `${Math.round((config.avatarSize || 116) * 0.22)}px`,
+                      width: `${avatarPx}px`,
+                      height: `${avatarPx}px`,
+                      borderRadius: avatarBorderRadius,
                     }}
                     className="bg-slate-100 border-2 border-slate-200 flex items-center justify-center text-slate-600 font-bold text-3xl shrink-0 shadow-sm"
                   >
