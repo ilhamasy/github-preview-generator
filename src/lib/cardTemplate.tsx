@@ -37,24 +37,24 @@ export function getCardElement(config: CardConfig) {
       style={{
         display: "flex",
         flexDirection: "column",
-        width: "1200px",
-        height: "630px",
+        width: "1280px",
+        height: "640px",
         boxSizing: "border-box",
         backgroundColor: "#FFFFFF",
         fontFamily: "Inter, sans-serif",
         overflow: "hidden",
       }}
     >
-      {/* Upper White Header Section (~48% height = ~302px) */}
+      {/* Upper White Header Section (~48% height = ~308px) */}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
           boxSizing: "border-box",
-          height: "302px",
-          width: "1200px",
-          padding: `44px ${marginX}px 28px ${marginX}px`,
+          height: "308px",
+          width: "1280px",
+          padding: `48px ${marginX}px 28px ${marginX}px`,
           backgroundColor: "#FFFFFF",
         }}
       >
@@ -284,17 +284,17 @@ export function getCardElement(config: CardConfig) {
         }}
       />
 
-      {/* Burgundy Content Panel (~52% height = ~322px) */}
+      {/* Burgundy Content Panel (~52% height = ~326px) */}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
           boxSizing: "border-box",
-          height: "322px",
-          width: "1200px",
+          height: "326px",
+          width: "1280px",
           backgroundColor: accentColor || "#650F25",
-          padding: `36px ${marginX}px 40px ${marginX}px`,
+          padding: `38px ${marginX}px 40px ${marginX}px`,
         }}
       >
         {/* Title and Description */}
@@ -303,7 +303,7 @@ export function getCardElement(config: CardConfig) {
             display: "flex",
             flexDirection: "column",
             gap: "12px",
-            maxWidth: "1032px",
+            maxWidth: "1100px",
           }}
         >
           <div

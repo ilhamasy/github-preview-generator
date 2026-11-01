@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Download, Copy, Check, Info, Loader2, Crop, User } from "lucide-react";
+import { Download, Info, Loader2, User } from "lucide-react";
 import { CardConfig } from "@/types/preview";
 import { formatCompactNumber } from "@/lib/formatters";
 import { GitHubIcon, StarIcon, ForkIcon, UsersIcon, PackageIcon } from "@/lib/svgIcons";
@@ -15,10 +15,8 @@ interface PreviewCanvasProps {
 
 export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeConfig }: PreviewCanvasProps) {
   const [isDownloading, setIsDownloading] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [showSafeZoneGuide, setShowSafeZoneGuide] = useState(false);
 
-  // Responsive scaling container for 1200 × 630 px (1.91:1) without empty gap
+  // Responsive scaling container for 1280 × 640 px (2:1) without empty gap
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(640);
 
@@ -45,14 +43,11 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
     };
   }, []);
 
-  // Standard 1200 × 630 (1.91:1 ratio) scaling
-  const scale = containerWidth > 0 ? containerWidth / 1200 : 0.5;
-  const exactHeight = Math.round(containerWidth * (630 / 1200));
+  // Standard 1280 × 640 scaling
+  const scale = containerWidth > 0 ? containerWidth / 1280 : 0.5;
+  const exactHeight = Math.round(containerWidth * (640 / 1280));
 
-  const targetPreset = config.exportPreset || "1200x630";
-  const is600 = targetPreset === "600x315" || targetPreset === "640x320";
-
-  // Safe area of at least 6% on all sides (6% of 1200 = 72px; default to 84px = 7.0%)
+  // Safe area of at least 6% on all sides (6% of 1280 = 76.8px; default to 84px = 6.56%)
   const marginX = config.safeZoneMargin || 84;
   const avatarPx = config.avatarSize || 120;
   const avatarBorderRadius =
@@ -89,7 +84,7 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
       const res = await fetch("/api/generate-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(config),
+        body: JSON.stringify({ ...config, exportPreset: "1280x640" }),
       });
 
       if (!res.ok) {
@@ -100,9 +95,8 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       const safeFilename = ownerRepoLabel.replace(/[^a-zA-Z0-9_-]/g, "-") || "github-preview";
-      const targetSize = is600 ? "600x315" : "1200x630";
       link.href = url;
-      link.download = `${safeFilename}-${targetSize}.png`;
+      link.download = `${safeFilename}-1280x640.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -115,104 +109,36 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
     }
   };
 
-  const handleCopyApiUrl = () => {
-    const safeRepo = encodeURIComponent(ownerRepoLabel);
-    const safeTitle = encodeURIComponent(displayTitle);
-    const safeSubtitle = encodeURIComponent(subtitle);
-    const safeColor = encodeURIComponent(accentColor);
-    const preset = is600 ? "&preset=600x315" : "&preset=1200x630";
-    const fullUrl = `${window.location.origin}/api/generate-image?repo=${safeRepo}&title=${safeTitle}&subtitle=${safeSubtitle}&color=${safeColor}${preset}`;
-
-    navigator.clipboard.writeText(fullUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
-  };
-
   return (
     <div className="flex flex-col gap-4 w-full">
-      {/* Top action bar: Preset Selector & Download Button placed beside each other */}
+      {/* Top action bar: Live preview badge & Single Download button */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Preset (1.91:1):
-            </span>
-          </div>
-
-          {/* Preset Buttons */}
-          <div className="inline-flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 gap-1">
-            <button
-              type="button"
-              onClick={() => onChangeConfig?.({ ...config, exportPreset: "1200x630", safeZoneMargin: 84 })}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                !is600
-                  ? "bg-rose-600 text-white shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              1200 × 630 (OG Default)
-            </button>
-            <button
-              type="button"
-              onClick={() => onChangeConfig?.({ ...config, exportPreset: "600x315", safeZoneMargin: 84 })}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                is600
-                  ? "bg-rose-600 text-white shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              600 × 315 (Mobile 1x)
-            </button>
-          </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+            Live Preview (1280 × 640)
+          </span>
         </div>
 
-        {/* Beside button size preset: Actions & Download Button */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setShowSafeZoneGuide(!showSafeZoneGuide)}
-            className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
-              showSafeZoneGuide
-                ? "bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 border border-red-300 dark:border-red-800 ring-2 ring-red-500/20 shadow-sm"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
-            }`}
-            title="Toggle 6% Open Graph safe zone crop guide"
-          >
-            <Crop className="w-3.5 h-3.5 text-red-500" />
-            <span>6% Safe Area {showSafeZoneGuide ? "ON" : "OFF"}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handleCopyApiUrl}
-            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
-            title="Copy direct PNG link"
-          >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-            <span>{copied ? "Copied!" : "Copy URL"}</span>
-          </button>
-
-          {/* Download Button right beside size preset controls */}
-          <button
-            type="button"
-            onClick={handleDownloadPng}
-            disabled={isDownloading}
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-rose-700 to-rose-900 hover:from-rose-800 hover:to-black text-white shadow-md shadow-rose-900/25 disabled:opacity-50 transition-all cursor-pointer active:scale-95 whitespace-nowrap"
-          >
-            {isDownloading ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Generating...</span>
-              </>
-            ) : (
-              <>
-                <Download className="w-3.5 h-3.5" />
-                <span>Download PNG ({is600 ? "600×315" : "1200×630"})</span>
-              </>
-            )}
-          </button>
-        </div>
+        {/* Single Download button for 1280 x 640 */}
+        <button
+          type="button"
+          onClick={handleDownloadPng}
+          disabled={isDownloading}
+          className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-rose-700 to-rose-900 hover:from-rose-800 hover:to-black text-white shadow-md shadow-rose-900/25 disabled:opacity-50 transition-all cursor-pointer active:scale-95 whitespace-nowrap"
+        >
+          {isDownloading ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span>Generating...</span>
+            </>
+          ) : (
+            <>
+              <Download className="w-4 h-4" />
+              <span>Download PNG (1280 × 640)</span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* Prominent Quick-Control Bar for Avatar & Photo Size */}
@@ -274,7 +200,7 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
         </div>
       </div>
 
-      {/* Main Card Canvas Wrapper - Scaled strictly to 1200 × 630 (1.91:1) without ANY black gap */}
+      {/* Main Card Canvas Wrapper - Scaled strictly to 1280 × 640 without ANY gap */}
       <div
         ref={containerRef}
         className="w-full relative overflow-hidden rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 bg-white"
@@ -284,8 +210,8 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
       >
         <div
           style={{
-            width: "1200px",
-            height: "630px",
+            width: "1280px",
+            height: "640px",
             transform: `scale(${scale})`,
             transformOrigin: "top left",
             position: "absolute",
@@ -294,45 +220,17 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
           }}
           className="flex flex-col select-none"
         >
-          {/* Visual Safe Zone Guide Overlay (6% safe area on all sides: 72px H / 38px V) */}
-          {showSafeZoneGuide && (
-            <div
-              className="absolute inset-0 pointer-events-none z-30 flex flex-col justify-between"
-              style={{
-                borderTop: "38px solid rgba(239, 68, 68, 0.16)",
-                borderBottom: "38px solid rgba(239, 68, 68, 0.16)",
-                borderLeft: "72px solid rgba(239, 68, 68, 0.16)",
-                borderRight: "72px solid rgba(239, 68, 68, 0.16)",
-                boxSizing: "border-box",
-              }}
-            >
-              <div className="w-full h-full border-2 border-dashed border-red-500/80 flex flex-col justify-between p-3 bg-red-500/[0.02]">
-                <div className="flex justify-between items-center">
-                  <span className="bg-red-600 text-white text-[12px] font-bold px-3 py-1 rounded-md shadow-md tracking-wider uppercase">
-                    ≥ 6% Safe Area (Open Graph 1200 × 630)
-                  </span>
-                  <span className="text-red-700 text-[12px] font-bold bg-white/95 px-3 py-1 rounded-md shadow-sm border border-red-200">
-                    ✓ 100% Protected from WhatsApp &amp; Mobile Cropping
-                  </span>
-                </div>
-                <div className="text-center text-red-600 text-[12px] font-semibold bg-white/80 py-1 px-4 rounded-md mx-auto shadow-sm">
-                  All text, repository details, metrics, and developer photo remain inside this safe boundary
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Upper White Header Section (~48% height = ~302px) */}
+          {/* Upper White Header Section (~48% height = ~308px) */}
           <div
             className="flex flex-col justify-between w-full bg-white"
             style={{
-              height: "302px",
-              padding: `44px ${marginX}px 28px ${marginX}px`,
+              height: "308px",
+              padding: `48px ${marginX}px 28px ${marginX}px`,
             }}
           >
             {/* Top Row: Owner / Repo slug + Avatar */}
             <div className="flex justify-between items-start w-full">
-              <div className="flex flex-wrap items-baseline gap-2.5 max-w-[940px]">
+              <div className="flex flex-wrap items-baseline gap-2.5 max-w-[1020px]">
                 {owner && (
                   <span className="text-[34px] font-medium text-slate-500 tracking-[-0.5px]">
                     {owner}
@@ -455,21 +353,21 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
             }}
           />
 
-          {/* Burgundy Content Panel (~52% height = ~322px) */}
+          {/* Burgundy Content Panel (~52% height = ~326px) */}
           <div
             className="flex flex-col justify-between w-full transition-colors duration-200"
             style={{
-              height: "322px",
+              height: "326px",
               backgroundColor: accentColor || "#650F25",
-              padding: `36px ${marginX}px 40px ${marginX}px`,
+              padding: `38px ${marginX}px 40px ${marginX}px`,
             }}
           >
             {/* Title & Description */}
-            <div className="flex flex-col gap-3 max-w-[1032px]">
-              <h1 className="text-[46px] font-extrabold text-white tracking-[-1px] leading-[1.15] line-clamp-2">
+            <div className="flex flex-col gap-3 max-w-[1100px]">
+              <h1 className="text-[48px] font-extrabold text-white tracking-[-1px] leading-[1.15] line-clamp-2">
                 {displayTitle || repo || "Repository Title"}
               </h1>
-              <p className="text-[20px] font-normal text-rose-100/95 leading-[1.5] line-clamp-2">
+              <p className="text-[21px] font-normal text-rose-100/95 leading-[1.5] line-clamp-2">
                 {subtitle || "No description provided for this repository."}
               </p>
             </div>
@@ -495,7 +393,7 @@ export function PreviewCanvas({ config, onRefreshMetadata, isFetching, onChangeC
       <div className="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 flex items-start gap-2.5">
         <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
         <p>
-          <strong>Open Graph 1.91:1 Recommended:</strong> The default <strong>1200 × 630 px</strong> format with ≥ 6% safe margins guarantees that all repository metrics, description, and profile picture remain fully visible on WhatsApp, Twitter/X, Discord, and GitHub social previews without clipping.
+          <strong>GitHub Recommended 1280 × 640 px:</strong> High-resolution 2:1 social card format with safe margins ensures all repository metrics, description, and developer photo display clearly without clipping.
         </p>
       </div>
     </div>

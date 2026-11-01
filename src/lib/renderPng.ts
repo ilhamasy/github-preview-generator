@@ -94,22 +94,15 @@ export async function renderCardPng(config: CardConfig): Promise<Buffer> {
   const element = getCardElement(finalConfig);
 
   const svg = await satori(element, {
-    width: 1200,
-    height: 630,
+    width: 1280,
+    height: 640,
     fonts,
   });
-
-  const targetWidth =
-    config.exportPreset === "600x315" || config.exportPreset === "640x320"
-      ? 600
-      : config.exportPreset === "1280x640"
-      ? 1280
-      : 1200;
 
   const resvg = new Resvg(svg, {
     fitTo: {
       mode: "width",
-      value: targetWidth,
+      value: 1280,
     },
   });
 
