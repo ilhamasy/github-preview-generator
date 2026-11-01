@@ -35,6 +35,7 @@ export interface CardConfig {
   avatarSize?: number;
   avatarShape?: "squircle" | "circle";
   safeZoneMargin?: number;
+  exportPreset?: "1280x640" | "640x320";
 }
 
 export interface GitHubApiResponse {

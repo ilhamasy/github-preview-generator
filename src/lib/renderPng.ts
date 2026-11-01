@@ -99,10 +99,12 @@ export async function renderCardPng(config: CardConfig): Promise<Buffer> {
     fonts,
   });
 
+  const targetWidth = config.exportPreset === "640x320" ? 640 : 1280;
+
   const resvg = new Resvg(svg, {
     fitTo: {
       mode: "width",
-      value: 1280,
+      value: targetWidth,
     },
   });
 

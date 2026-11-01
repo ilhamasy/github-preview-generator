@@ -27,8 +27,9 @@ const DEFAULT_CONFIG: CardConfig = {
   showLanguage: true,
   usedBy: undefined,
   showUsedBy: false,
-  avatarSize: 116,
-  safeZoneMargin: 96,
+  avatarSize: 120,
+  safeZoneMargin: 112,
+  exportPreset: "640x320",
 };
 
 export default function Home() {
@@ -77,8 +78,9 @@ export default function Home() {
         showLanguage: Boolean(data.language),
         usedBy: undefined,
         showUsedBy: false,
-        avatarSize: config.avatarSize || 116,
-        safeZoneMargin: config.safeZoneMargin || 96,
+        avatarSize: config.avatarSize || 120,
+        safeZoneMargin: config.safeZoneMargin || 112,
+        exportPreset: config.exportPreset || "640x320",
       });
     } catch (err: unknown) {
       console.error("Fetch error:", err);
